@@ -29,8 +29,8 @@ public class PlayListService {
 
     public MusicaDto adicionarMusicaNaPlayList(Musica musicaAdd, String idPlayList){
 
-        Musica musica = musicaRepository.findById(musicaAdd.getId()).orElseThrow(()-> new MusicaNaoEncontradaException());
-        PlayList playList = playListRepository.findById(idPlayList).orElseThrow(()-> new PlayListNaoEncontradaException());
+        Musica musica = musicaRepository.findById(musicaAdd.getId()).orElseThrow(() -> new MusicaNaoEncontradaException());
+        PlayList playList = playListRepository.findById(idPlayList).orElseThrow(() -> new PlayListNaoEncontradaException());
 
         List<Musica> listaMusicas = new ArrayList<>();
         listaMusicas.add(musica);

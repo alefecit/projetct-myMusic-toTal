@@ -1,5 +1,21 @@
 
 @
 logs/app/app.log,5/e/5e84b7836eef886c484024c29539e2c9b5b051aa
-H
-MyMusic/logs/app/app.log,d/e/dee5c8f50c73c0f9004f251f878f7f248b0488b4
+‚
+RMyMusic/src/main/java/com/ciandt/summit/bootcamp2022/controller/dto/MusicaDto.java,c/c/cc3d23d1b527bfe992b11bd6ee92136aaaa5042a
+…
+UMyMusic/src/main/java/com/ciandt/summit/bootcamp2022/exceptions/ExceptionService.java,6/1/61c9641d8d593a80083f328d0c0bc43887f47095
+‘
+aMyMusic/src/main/java/com/ciandt/summit/bootcamp2022/exceptions/MusicaNaoEncontradaException.java,d/3/d3531a78bfa7de5068a25fd03aaad185253ca729
+ƒ
+SMyMusic/src/main/java/com/ciandt/summit/bootcamp2022/SummitBootcampApplication.java,5/5/55423a4a8a839a996941828c80bab6a344bb7bd3
+ƒ
+STokenProvider/src/main/java/com/ciandt/token/provider/TokenProviderApplication.java,d/0/d0b2f891b2353fa3b1decc3b831ba9b2f96218f9
+G
+logs/token-provider.log,1/2/12719a8262349d42cabe68c5d97a6e7c92bc1838
+ƒ
+SMyMusic/src/test/java/com/ciandt/summit/bootcamp2022/service/MusicaServiceTest.java,7/3/735dbf62109d51e6a9bacb3b859b4492136f5774
+y
+IMyMusic/src/main/java/com/ciandt/summit/bootcamp2022/entity/PlayList.java,a/6/a6b731c0db37ba9c324164713c3a68d83f7faf24
+?
+MyMusic/pom.xml,b/f/bf40725e622522f2ba8fa0fb01b465d54d786ba0
