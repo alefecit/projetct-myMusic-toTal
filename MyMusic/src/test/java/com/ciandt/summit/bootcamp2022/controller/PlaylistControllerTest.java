@@ -1,84 +1,83 @@
 package com.ciandt.summit.bootcamp2022.controller;
 
-
-import com.ciandt.summit.bootcamp2022.config.interceptor.JwtInterceptor;
+import com.ciandt.summit.bootcamp2022.controller.PlaylistController;
 import com.ciandt.summit.bootcamp2022.controller.dto.MusicaDto;
 import com.ciandt.summit.bootcamp2022.entity.Artista;
 import com.ciandt.summit.bootcamp2022.entity.Musica;
 import com.ciandt.summit.bootcamp2022.service.PlayListService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import static org.mockito.Mockito.*;
-
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.ResultHandler;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-@Import(PlaylistController.class)
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = PlaylistControllerTest.class)
+@SpringBootTest
 class PlaylistControllerTest {
 
-    @Autowired
-    private MockMvc mvc;
+    @InjectMocks
+    private PlaylistController playlistController;
 
-    @MockBean
+    @Mock
     private PlayListService playListService;
 
-    @Autowired
-    private Gson gson;
 
-    @MockBean
-    private JwtInterceptor jwtInterceptor;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     void whenAddMusicToPlayListThenReturn201() throws Exception {
 
         Artista artista = new Artista();
         artista.setNome("Alefe");
+
+        Musica musica = new Musica("Alefe Patrick", artista);
+
+        List<Musica> musicaList = new ArrayList<>();
+        musicaList.add(musica);
+        MusicaDto musicaDto = new MusicaDto(musicaList);
+        when(playListService.adicionarMusicaNaPlayList(musica, "123-456-789")).thenReturn(musicaDto);
+
+        ResponseEntity<MusicaDto> response = playlistController.adicionarMusicasNaPLaylist(musica, "123-456-789");
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    void whenMusicToPlayListThenReturnWithBodyNotNull(){
+
+        Artista artista = new Artista();
+        artista.setNome("Alefe");
+
         Musica musica = new Musica();
-        musica.setId("67f5976c-eb1e-404e-8220-2c2a8a23be47");
-        musica.setNome("Abobora");
+
+        musica.setId("haghasghhagsas");
+        musica.setNome("Alefe Patrick");
         musica.setArtista(artista);
         List<Musica> musicaList = new ArrayList<>();
         musicaList.add(musica);
-        MusicaDto dto = new MusicaDto(musicaList);
-        when(playListService.adicionarMusicaNaPlayList(musica,"92d8123f-e9f6-4806-8e0e-1c6a5d46f2ed")).thenReturn(dto);
+        MusicaDto musicaDto = new MusicaDto(musicaList);
+        when(playListService.adicionarMusicaNaPlayList(musica, "123-456-789")).thenReturn(musicaDto);
 
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/api/playlists/92d8123f-e9f6-4806-8e0e-1c6a5d46f2ed/musicas")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(new Musica("Alefe ama teste",artista)))
+        ResponseEntity<MusicaDto> response = playlistController.adicionarMusicasNaPLaylist(musica, "123-456-789");
 
-                        .accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isCreated())
-                .andReturn();
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+
+        assertNotNull(response.getBody());
     }
 
-    public static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
