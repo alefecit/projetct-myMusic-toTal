@@ -9,14 +9,22 @@ import com.ciandt.summit.bootcamp2022.service.MusicaService;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.gson.Gson;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.Mockito.*;
+
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,109 +38,103 @@ import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-@Import(MusicController.class)
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = MusicControllerTest.class)
+@SpringBootTest
 public class MusicControllerTest {
 
-    @Autowired
-    private MockMvc mvc;
+    @InjectMocks
+    private MusicController musicController;
 
-    @MockBean
+    @Mock
     private MusicaService musicaService;
 
-    @Autowired
-    private Gson gson;
-
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
     @Test
     void whenGetThenReturnString() throws Exception {
-        RequestBuilder request = get("/api/v1/music");
 
-        MvcResult result = mvc.perform(request).andReturn();
+        ResponseEntity<String> response = musicController.get();
 
-        assertEquals(200, result.getResponse().getStatus());
-        assertEquals("67f5976c-eb1e-404e-8220-2c2a8a23be47", result.getResponse().getContentAsString());
+        assertEquals("67f5976c-eb1e-404e-8220-2c2a8a23be47",response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
-    void whenFindMusicWithFilterThereNoRegisters() throws Exception {
+    void whenBuscarMusicasThenReturnStatusCodeOk(){
 
-        List<Musica> musicaReturnWhenCallFindMusicFunction = new ArrayList<>();
-
-        MusicaDto musicaDto = new MusicaDto(musicaReturnWhenCallFindMusicFunction);
-
-        when(musicaService.buscarMusicas("saiu")).thenReturn(musicaDto);
-
-        RequestBuilder request = get("/api/v1/music/buscar")
-                .param("filtro", "saiu");
-        MvcResult result = mvc.perform(request).andReturn();
-
-        assertEquals(204, result.getResponse().getStatus());
-
-    }
-
-    @Test
-    void whenFindMusicWithFilterThatThereAreRegisters() throws Exception {
-
-        Artista artista = new Artista("Leonardo");
+        Artista artista = new Artista("Bruno Mars");
 
         Musica musica = new Musica("Talking to the moon", artista);
 
-        List<Musica> musicaList = new ArrayList<>(Collections.singletonList(musica));
+        List<Musica> listaDeMusicas = new ArrayList<>();
+        listaDeMusicas.add(musica);
 
-        MusicaDto musicaDto = new MusicaDto(musicaList);
+        MusicaDto musicaDtoReturn = new MusicaDto(listaDeMusicas);
 
-        when(musicaService.buscarMusicas("bru")).thenReturn(musicaDto);
+        when(musicaService.buscarMusicas("bru")).thenReturn(musicaDtoReturn);
 
-        RequestBuilder request = get("/api/v1/music/buscar")
-                .param("filtro", "bru");
+        ResponseEntity<MusicaDto> response = musicController.buscar("bru");
 
-        MvcResult result = mvc.perform(request).andReturn();
-
-        MusicaDto convertReturnInObject = gson.fromJson(result.getResponse().getContentAsString(), MusicaDto.class);
-
-        assertEquals(200, result.getResponse().getStatus());
-        assertFalse(convertReturnInObject.getData().isEmpty());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
-    void whenFindMusicWithFilterThatThereNotRegistersThenReturn204() throws Exception {
+    void whenBuscarMusicasThenReturnNotNull(){
 
-        List<Musica> musicaList = new ArrayList<>();
+        Artista artista = new Artista("Bruno Mars");
 
-        MusicaDto musicaDto = new MusicaDto(musicaList);
+        Musica musica = new Musica("Talking to the moon", artista);
 
-        when(musicaService.buscarMusicas("saiu")).thenReturn(musicaDto);
+        List<Musica> listaDeMusicas = new ArrayList<>();
+        listaDeMusicas.add(musica);
 
-        RequestBuilder request = get("/api/v1/music/buscar")
-                .param("filtro", "saiu");
+        MusicaDto musicaDtoReturn = new MusicaDto(listaDeMusicas);
 
-        MvcResult result = mvc.perform(request).andReturn();
+        when(musicaService.buscarMusicas("bru")).thenReturn(musicaDtoReturn);
 
+        ResponseEntity<MusicaDto> response = musicController.buscar("bru");
 
-        assertEquals(204, result.getResponse().getStatus());
+        assertNotNull(response.getBody());
+
     }
 
     @Test
-    void whenFindMusicWithIvalidFilterThenReturnException() throws Exception {
+    void whenBuscarMusicasThenReturnTrueForNotEmpty(){
 
-        List<Musica> musicaList = new ArrayList<>();
+        Artista artista = new Artista("Bruno Mars");
 
-        MusicaDto musicaDto = new MusicaDto(musicaList);
+        List<Musica> listaDeMusicas = new ArrayList<>();
 
-        when(musicaService.buscarMusicas("br")).thenThrow(FiltroErrorException.class);
+        MusicaDto musicaDtoReturn = new MusicaDto(listaDeMusicas);
 
-        RequestBuilder request = get("/api/v1/music/buscar")
-                .param("filtro", "br");
+        when(musicaService.buscarMusicas("bru")).thenReturn(musicaDtoReturn);
 
-        MvcResult result = mvc.perform(request).andReturn();
+        ResponseEntity<MusicaDto> response = musicController.buscar("bru");
 
-        MusicaErrorResponse convertReturnInObject = gson.fromJson(result.getResponse().getContentAsString(), MusicaErrorResponse.class);
-
-        assertThrows(FiltroErrorException.class, () -> musicaService.buscarMusicas("br"));
-        assertEquals("Numeros de caracteres invalidos!", convertReturnInObject.getMessage());
-        assertNotNull(convertReturnInObject);
+        assertTrue(response.getBody().getData().isEmpty());
 
     }
+
+    @Test
+    void whenBuscarMusicasThenReturnFalseForNotEmpty(){
+
+        Artista artista = new Artista("Bruno Mars");
+
+        Musica musica = new Musica("Talking to the moon", artista);
+
+        List<Musica> listaDeMusicas = new ArrayList<>();
+        listaDeMusicas.add(musica);
+
+        MusicaDto musicaDtoReturn = new MusicaDto(listaDeMusicas);
+
+        when(musicaService.buscarMusicas("bru")).thenReturn(musicaDtoReturn);
+
+        ResponseEntity<MusicaDto> response = musicController.buscar("bru");
+
+        assertFalse(response.getBody().getData().isEmpty());
+
+    }
+
 
 }
