@@ -41,4 +41,15 @@ public class PlayListService {
         playListRepository.save(playList);
         return musicaDto;
     }
+
+    public PlayList RemoverMusicaNaPlayList(String musicaRemove, String idPlayList){
+        Musica musica = musicaRepository.findById(musicaRemove).orElseThrow(() -> new MusicaNaoEncontradaException());
+        PlayList playList = playListRepository.findById(idPlayList).orElseThrow(() -> new PlayListNaoEncontradaException());
+
+        playList.getMusicas().remove(musica);
+
+        return playListRepository.save(playList);
+
+    }
+
 }
