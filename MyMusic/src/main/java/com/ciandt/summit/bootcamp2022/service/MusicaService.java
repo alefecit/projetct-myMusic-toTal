@@ -4,6 +4,7 @@ import com.ciandt.summit.bootcamp2022.controller.dto.MusicaDto;
 import com.ciandt.summit.bootcamp2022.entity.Musica;
 import com.ciandt.summit.bootcamp2022.exceptions.FiltroErrorException;
 import com.ciandt.summit.bootcamp2022.repository.MusicaRepository;
+import com.ciandt.summit.bootcamp2022.utils.cache.GenericCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public class MusicaService {
     @Autowired
     private MusicaRepository musicaRepository;
 
+    @Autowired
+    private GenericCache<String, MusicaDto> cache;
+
 
     public MusicaDto buscarMusicas(String filtro){
 
@@ -27,9 +31,13 @@ public class MusicaService {
             throw new FiltroErrorException();
         }
 
-        List<Musica> lista = musicaRepository.buscarMusicaArtista(filtro);
-
         LOGGER.info("Musicas filtradas com sucesso!");
-        return new MusicaDto(lista);
+        return this.cache.get(filtro).orElseGet(() -> this.fromRepository(filtro));
+    }
+
+    public MusicaDto fromRepository(String filtro) {
+        MusicaDto listaDeMusicas = new MusicaDto(musicaRepository.buscarMusicaArtista(filtro));
+        this.cache.put(filtro, listaDeMusicas);
+        return listaDeMusicas;
     }
 }
