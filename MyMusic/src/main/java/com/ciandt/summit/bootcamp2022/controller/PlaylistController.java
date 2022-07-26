@@ -2,6 +2,7 @@ package com.ciandt.summit.bootcamp2022.controller;
 
 import com.ciandt.summit.bootcamp2022.controller.dto.MusicaDto;
 import com.ciandt.summit.bootcamp2022.entity.Musica;
+import com.ciandt.summit.bootcamp2022.entity.PlayList;
 import com.ciandt.summit.bootcamp2022.service.PlayListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,5 +27,10 @@ public class PlaylistController {
         return ResponseEntity.created(uri).body(musicaDto);
     }
 
+    @DeleteMapping("/{playlistId}/musicas/{musicaId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<String> removerMusicaDaPLaylist(@PathVariable(name = "playlistId") String idPlayList, @PathVariable(name = "musicaId") String musicaId){
+        return ResponseEntity.ok().body(playListService.removerMusicaNaPlayList(idPlayList, musicaId));
+    }
 
 }
