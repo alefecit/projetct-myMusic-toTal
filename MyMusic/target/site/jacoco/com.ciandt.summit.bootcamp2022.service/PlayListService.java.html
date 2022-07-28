@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PlayListService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">summit-bootcamp</a> &gt; <a href="index.source.html" class="el_package">com.ciandt.summit.bootcamp2022.service</a> &gt; <span class="el_source">PlayListService.java</span></div><h1>PlayListService.java</h1><pre class="source lang-java linenums">package com.ciandt.summit.bootcamp2022.service;
 
 import com.ciandt.summit.bootcamp2022.controller.dto.ResponseDTO;
-import com.ciandt.summit.bootcamp2022.entity.Musica;
+import com.ciandt.summit.bootcamp2022.entity.Music;
 import com.ciandt.summit.bootcamp2022.entity.PlayList;
 import com.ciandt.summit.bootcamp2022.exceptions.*;
-import com.ciandt.summit.bootcamp2022.repository.MusicaRepository;
+import com.ciandt.summit.bootcamp2022.repository.MusicRepository;
 import com.ciandt.summit.bootcamp2022.repository.PlayListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,41 +20,42 @@ import java.util.stream.Collectors;
     private PlayListRepository playListRepository;
 
     @Autowired
-    private MusicaRepository musicaRepository;
+    private MusicRepository musicRepository;
 
     @Autowired
-    private MusicaService musicaService;
+    private MusicService musicService;
 
-    public ResponseDTO adicionarMusicaNaPlayList(Musica musicaAdd, String idPlayList){
+    public ResponseDTO addSongInPlayList(Music musicAdd, String idPlayList){
 
-<span class="fc" id="L30">        Musica musica = musicaRepository.findById(musicaAdd.getId()).orElseThrow(() -&gt; new ErrorException(&quot;Música não encontrada!&quot;));</span>
-<span class="fc" id="L31">        PlayList playList = playListRepository.findById(idPlayList).orElseThrow(() -&gt; new ErrorException(&quot;PlayList não encontrada!&quot;));</span>
+<span class="fc" id="L30">        Music music = musicRepository.findById(musicAdd.getId()).orElseThrow(() -&gt; new ErrorException(&quot;Song not found.&quot;));</span>
+<span class="fc" id="L31">        PlayList playList = playListRepository.findById(idPlayList).orElseThrow(() -&gt; new ErrorException(&quot;PlayList not found&quot;));</span>
 
-<span class="fc" id="L33">        List&lt;Musica&gt; listaMusicas = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L34">        listaMusicas.add(musica);</span>
-<span class="fc" id="L35">        ResponseDTO responseDTO = new ResponseDTO(listaMusicas);</span>
+<span class="fc" id="L33">        List&lt;Music&gt; songList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L34">        songList.add(music);</span>
+<span class="fc" id="L35">        ResponseDTO responseDTO = new ResponseDTO(songList);</span>
 
-<span class="fc" id="L37">        playList.setMusicas(listaMusicas);</span>
+<span class="fc" id="L37">        playList.setMusicas(songList);</span>
 <span class="fc" id="L38">        playListRepository.save(playList);</span>
 <span class="fc" id="L39">        return responseDTO;</span>
     }
 
-    public String removerMusicaNaPlayList(String idPlayList, String musicaRemove){
+    public String removeSongFromPlayList(String idPlayList, String songRemove){
 
-<span class="fc" id="L44">        Musica musica = musicaRepository.findById(musicaRemove).orElseThrow(() -&gt; new ErrorException(&quot;Música não encontrada!&quot;));</span>
-<span class="fc" id="L45">        PlayList playList = playListRepository.findById(idPlayList).orElseThrow(() -&gt; new ErrorException(&quot;PlayList não encontrada!&quot;));</span>
-<span class="fc" id="L46">        List&lt;Musica&gt; musicas = playList.getMusicas().stream().filter(music -&gt; music.equals(musica)).collect(Collectors.toList());</span>
+<span class="fc" id="L44">        Music musicFind = musicRepository.findById(songRemove).orElseThrow(() -&gt; new ErrorException(&quot;Song not found.&quot;));</span>
+<span class="fc" id="L45">        PlayList playList = playListRepository.findById(idPlayList).orElseThrow(() -&gt; new ErrorException(&quot;PlayList not found&quot;));</span>
 
-<span class="fc bfc" id="L48" title="All 2 branches covered.">        if(musicas.size() &lt; 1){</span>
-<span class="fc" id="L49">            throw new ErrorException(&quot;Música não encontrada na playList&quot;);</span>
+<span class="fc" id="L47">        List&lt;Music&gt; musics = playList.getMusicas().stream().filter(music -&gt; music.equals(musicFind)).collect(Collectors.toList());</span>
+
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if(musics.size() &lt; 1){</span>
+<span class="fc" id="L50">            throw new ErrorException(&quot;PlayList Song not found in playlist.&quot;);</span>
         }
 
         try {
-<span class="fc" id="L53">            playList.getMusicas().remove(musica);</span>
-<span class="fc" id="L54">            playListRepository.save(playList);</span>
-<span class="fc" id="L55">            return &quot;Música &quot;+musicaRemove+&quot; removida da Playlist com sucesso!&quot;;</span>
-<span class="nc" id="L56">        }catch (Exception e){</span>
-<span class="nc" id="L57">            return e.getMessage();</span>
+<span class="fc" id="L54">            playList.getMusicas().remove(musicFind);</span>
+<span class="fc" id="L55">            playListRepository.save(playList);</span>
+<span class="fc" id="L56">            return &quot;Song &quot;+songRemove+&quot; removed from playlist successfull.&quot;;</span>
+<span class="nc" id="L57">        }catch (Exception e){</span>
+<span class="nc" id="L58">            return e.getMessage();</span>
         }
     }
 }

@@ -1,10 +1,10 @@
 package com.ciandt.summit.bootcamp2022.service;
 
 import com.ciandt.summit.bootcamp2022.controller.dto.ResponseDTO;
-import com.ciandt.summit.bootcamp2022.entity.Musica;
+import com.ciandt.summit.bootcamp2022.entity.Music;
 import com.ciandt.summit.bootcamp2022.entity.PlayList;
 import com.ciandt.summit.bootcamp2022.exceptions.*;
-import com.ciandt.summit.bootcamp2022.repository.MusicaRepository;
+import com.ciandt.summit.bootcamp2022.repository.MusicRepository;
 import com.ciandt.summit.bootcamp2022.repository.PlayListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,39 +20,40 @@ public class PlayListService {
     private PlayListRepository playListRepository;
 
     @Autowired
-    private MusicaRepository musicaRepository;
+    private MusicRepository musicRepository;
 
     @Autowired
-    private MusicaService musicaService;
+    private MusicService musicService;
 
-    public ResponseDTO adicionarMusicaNaPlayList(Musica musicaAdd, String idPlayList){
+    public ResponseDTO addSongInPlayList(Music musicAdd, String idPlayList){
 
-        Musica musica = musicaRepository.findById(musicaAdd.getId()).orElseThrow(() -> new ErrorException("Música não encontrada!"));
-        PlayList playList = playListRepository.findById(idPlayList).orElseThrow(() -> new ErrorException("PlayList não encontrada!"));
+        Music music = musicRepository.findById(musicAdd.getId()).orElseThrow(() -> new ErrorException("Song not found."));
+        PlayList playList = playListRepository.findById(idPlayList).orElseThrow(() -> new ErrorException("PlayList not found"));
 
-        List<Musica> listaMusicas = new ArrayList<>();
-        listaMusicas.add(musica);
-        ResponseDTO responseDTO = new ResponseDTO(listaMusicas);
+        List<Music> songList = new ArrayList<>();
+        songList.add(music);
+        ResponseDTO responseDTO = new ResponseDTO(songList);
 
-        playList.setMusicas(listaMusicas);
+        playList.setMusicas(songList);
         playListRepository.save(playList);
         return responseDTO;
     }
 
-    public String removerMusicaNaPlayList(String idPlayList, String musicaRemove){
+    public String removeSongFromPlayList(String idPlayList, String songRemove){
 
-        Musica musica = musicaRepository.findById(musicaRemove).orElseThrow(() -> new ErrorException("Música não encontrada!"));
-        PlayList playList = playListRepository.findById(idPlayList).orElseThrow(() -> new ErrorException("PlayList não encontrada!"));
-        List<Musica> musicas = playList.getMusicas().stream().filter(music -> music.equals(musica)).collect(Collectors.toList());
+        Music musicFind = musicRepository.findById(songRemove).orElseThrow(() -> new ErrorException("Song not found."));
+        PlayList playList = playListRepository.findById(idPlayList).orElseThrow(() -> new ErrorException("PlayList not found"));
 
-        if(musicas.size() < 1){
-            throw new ErrorException("Música não encontrada na playList");
+        List<Music> musics = playList.getMusicas().stream().filter(music -> music.equals(musicFind)).collect(Collectors.toList());
+
+        if(musics.size() < 1){
+            throw new ErrorException("PlayList Song not found in playlist.");
         }
 
         try {
-            playList.getMusicas().remove(musica);
+            playList.getMusicas().remove(musicFind);
             playListRepository.save(playList);
-            return "Música "+musicaRemove+" removida da Playlist com sucesso!";
+            return "Song "+songRemove+" removed from playlist successfull.";
         }catch (Exception e){
             return e.getMessage();
         }

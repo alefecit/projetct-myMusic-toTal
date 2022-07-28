@@ -1,11 +1,11 @@
 package com.ciandt.summit.bootcamp2022.controller;
 
 import com.ciandt.summit.bootcamp2022.controller.dto.ResponseDTO;
-import com.ciandt.summit.bootcamp2022.entity.Artista;
-import com.ciandt.summit.bootcamp2022.entity.Musica;
+import com.ciandt.summit.bootcamp2022.entity.Artist;
+import com.ciandt.summit.bootcamp2022.entity.Music;
 import com.ciandt.summit.bootcamp2022.exceptions.ErrorException;
 import com.ciandt.summit.bootcamp2022.exceptions.ErrorResponse;
-import com.ciandt.summit.bootcamp2022.service.MusicaService;
+import com.ciandt.summit.bootcamp2022.service.MusicService;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +32,7 @@ public class MusicControllerTest {
     private MusicController musicController;
 
     @Mock
-    private MusicaService musicaService;
+    private MusicService musicService;
 
     @BeforeEach
     void setUp() {
@@ -51,18 +49,18 @@ public class MusicControllerTest {
     @Test
     void whenBuscarMusicasThenReturnStatusCodeOk(){
 
-        Artista artista = new Artista("Bruno Mars");
+        Artist artist = new Artist("Bruno Mars");
 
-        Musica musica = new Musica("Talking to the moon", artista);
+        Music music = new Music("Talking to the moon", artist);
 
-        List<Musica> listaDeMusicas = new ArrayList<>();
-        listaDeMusicas.add(musica);
+        List<Music> songList = new ArrayList<>();
+        songList.add(music);
 
-        ResponseDTO responseDTOReturn = new ResponseDTO(listaDeMusicas);
+        ResponseDTO responseDTOReturn = new ResponseDTO(songList);
 
-        when(musicaService.buscarMusicas("bru")).thenReturn(responseDTOReturn);
+        when(musicService.findMusic("bru")).thenReturn(responseDTOReturn);
 
-        ResponseEntity<ResponseDTO> response = musicController.buscar("bru");
+        ResponseEntity<ResponseDTO> response = musicController.findByFilter("bru");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
@@ -70,11 +68,11 @@ public class MusicControllerTest {
     @Test
     void whenBuscarMusicasWithIvalidFilter(){
 
-        when(musicaService.buscarMusicas("b")).thenThrow(new ErrorException("Erro ao filtrar musicas!"));
+        when(musicService.findMusic("b")).thenThrow(new ErrorException("Error when filtering songs."));
 
        Exception exception = assertThrows(ErrorException.class, () -> {
-            musicController.buscar("b");
-        }, "Erro ao filtrar musicas!");
+            musicController.findByFilter("b");
+        }, "Error when filtering songs.");
 
        ErrorResponse errorResponse = new ErrorResponse(400, exception.getMessage());
 
@@ -84,18 +82,18 @@ public class MusicControllerTest {
     @Test
     void whenBuscarMusicasThenReturnNotNull(){
 
-        Artista artista = new Artista("Bruno Mars");
+        Artist artist = new Artist("Bruno Mars");
 
-        Musica musica = new Musica("Talking to the moon", artista);
+        Music music = new Music("Talking to the moon", artist);
 
-        List<Musica> listaDeMusicas = new ArrayList<>();
-        listaDeMusicas.add(musica);
+        List<Music> songList = new ArrayList<>();
+        songList.add(music);
 
-        ResponseDTO responseDTOReturn = new ResponseDTO(listaDeMusicas);
+        ResponseDTO responseDTOReturn = new ResponseDTO(songList);
 
-        when(musicaService.buscarMusicas("bru")).thenReturn(responseDTOReturn);
+        when(musicService.findMusic("bru")).thenReturn(responseDTOReturn);
 
-        ResponseEntity<ResponseDTO> response = musicController.buscar("bru");
+        ResponseEntity<ResponseDTO> response = musicController.findByFilter("bru");
 
         assertNotNull(response.getBody());
 
@@ -104,13 +102,13 @@ public class MusicControllerTest {
     @Test
     void whenBuscarMusicasThenReturnErrorException(){
 
-        List<Musica> musicaList = new ArrayList<>();
+        List<Music> musicList = new ArrayList<>();
 
-        ResponseDTO responseDTO = new ResponseDTO(musicaList);
+        ResponseDTO responseDTO = new ResponseDTO(musicList);
 
-        when(musicaService.buscarMusicas("saiu")).thenReturn(responseDTO);
+        when(musicService.findMusic("saiu")).thenReturn(responseDTO);
 
-        ResponseEntity<ResponseDTO> response = musicController.buscar("saiu");
+        ResponseEntity<ResponseDTO> response = musicController.findByFilter("saiu");
 
         assertNull(response.getBody());
     }

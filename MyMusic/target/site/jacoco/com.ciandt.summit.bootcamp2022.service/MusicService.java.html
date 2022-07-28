@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MusicService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">summit-bootcamp</a> &gt; <a href="index.source.html" class="el_package">com.ciandt.summit.bootcamp2022.service</a> &gt; <span class="el_source">MusicService.java</span></div><h1>MusicService.java</h1><pre class="source lang-java linenums">package com.ciandt.summit.bootcamp2022.service;
+
+import com.ciandt.summit.bootcamp2022.controller.dto.ResponseDTO;
+import com.ciandt.summit.bootcamp2022.exceptions.ErrorException;
+import com.ciandt.summit.bootcamp2022.repository.MusicRepository;
+import com.ciandt.summit.bootcamp2022.utils.cache.GenericCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+<span class="fc" id="L13">public class MusicService {</span>
+
+<span class="fc" id="L15">    private static final Logger LOGGER = LoggerFactory.getLogger(MusicService.class);</span>
+
+    @Autowired
+    private MusicRepository musicRepository;
+
+    @Autowired
+    private GenericCache&lt;String, ResponseDTO&gt; cache;
+
+
+    public ResponseDTO findMusic(String filter){
+
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        if(filter.length() &lt; 2){</span>
+<span class="fc" id="L27">            LOGGER.error(&quot;Error when filtering songs.&quot;);</span>
+<span class="fc" id="L28">            throw new ErrorException(&quot;Error when filtering songs.&quot;);</span>
+        }
+
+<span class="fc" id="L31">        LOGGER.info(&quot;Songs filtered successfull.&quot;);</span>
+<span class="pc" id="L32">        return this.cache.get(filter).orElseGet(() -&gt; this.fromRepository(filter));</span>
+    }
+
+    public ResponseDTO fromRepository(String filtro) {
+<span class="fc" id="L36">        ResponseDTO songList = new ResponseDTO(musicRepository.findSongsAndArtists(filtro));</span>
+<span class="fc" id="L37">        this.cache.put(filtro, songList);</span>
+<span class="fc" id="L38">        return songList;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

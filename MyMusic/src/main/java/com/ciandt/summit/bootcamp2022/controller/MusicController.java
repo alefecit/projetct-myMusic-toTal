@@ -1,12 +1,11 @@
 package com.ciandt.summit.bootcamp2022.controller;
 
 import com.ciandt.summit.bootcamp2022.controller.dto.ResponseDTO;
-import com.ciandt.summit.bootcamp2022.service.MusicaService;
+import com.ciandt.summit.bootcamp2022.service.MusicService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +15,7 @@ public class MusicController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MusicController.class);
     @Autowired
-    private MusicaService service;
+    private MusicService service;
 
     @GetMapping
     public ResponseEntity<String> get() {
@@ -24,17 +23,17 @@ public class MusicController {
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<ResponseDTO> buscar(@RequestParam(name = "filtro", required = false) String filtro){
+    public ResponseEntity<ResponseDTO> findByFilter(@RequestParam(name = "filter", required = false) String filtro){
 
-        LOGGER.info("Acessando método de buscar musicas por filtro!");
-        ResponseDTO musicas = service.buscarMusicas(filtro);
+        LOGGER.info("accessing find Songs method by filter");
+        ResponseDTO data = service.findMusic(filtro);
 
-        if(musicas.getData().isEmpty()){
-            LOGGER.info("Musicas não encontradas");
+        if(data.getData().isEmpty()){
+            LOGGER.info("Songs not found.");
             return ResponseEntity.noContent().build();
         }
 
-        LOGGER.info("Musicas retornadas com sucesso!");
-        return ResponseEntity.ok(musicas);
+        LOGGER.info("Songs returned successful.");
+        return ResponseEntity.ok(data);
     }
 }
