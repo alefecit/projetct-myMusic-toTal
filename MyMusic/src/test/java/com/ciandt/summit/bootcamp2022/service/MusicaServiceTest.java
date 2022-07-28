@@ -1,8 +1,9 @@
 package com.ciandt.summit.bootcamp2022.service;
 
-import com.ciandt.summit.bootcamp2022.controller.dto.MusicaDto;
+import com.ciandt.summit.bootcamp2022.controller.dto.ResponseDTO;
 import com.ciandt.summit.bootcamp2022.entity.Artista;
 import com.ciandt.summit.bootcamp2022.entity.Musica;
+import com.ciandt.summit.bootcamp2022.exceptions.ErrorException;
 import com.ciandt.summit.bootcamp2022.repository.MusicaRepository;
 import com.ciandt.summit.bootcamp2022.utils.cache.GenericCache;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +28,7 @@ class MusicaServiceTest {
     private MusicaRepository musicaRepository;
 
     @Mock
-    private GenericCache<String, MusicaDto> cache;
+    private GenericCache<String, ResponseDTO> cache;
 
     @BeforeEach
     void setUp(){
@@ -41,11 +42,11 @@ class MusicaServiceTest {
 
         when(musicaRepository.buscarMusicaArtista("bru")).thenReturn(musicaList);
 
-        when(this.cache.get("bru")).thenReturn(Optional.of(new MusicaDto(musicaList)));
+        when(this.cache.get("bru")).thenReturn(Optional.of(new ResponseDTO(musicaList)));
 
-        MusicaDto musicaDto = musicaService.buscarMusicas("bru");
+        ResponseDTO responseDTO = musicaService.buscarMusicas("bru");
 
-        assertNotNull(musicaDto);
+        assertNotNull(responseDTO);
     }
 
     @Test
@@ -53,14 +54,13 @@ class MusicaServiceTest {
 
         List<Musica> musicaList = new ArrayList<>();
 
-        when(this.cache.get("bru")).thenReturn(Optional.of(new MusicaDto(musicaList)));
+        when(this.cache.get("bru")).thenReturn(Optional.of(new ResponseDTO(musicaList)));
 
         when(musicaRepository.buscarMusicaArtista("bru")).thenReturn(musicaList);
 
-        MusicaDto musicaDto = musicaService.buscarMusicas("bru");
+        ResponseDTO responseDTO = musicaService.buscarMusicas("bru");
 
-        assertTrue(musicaDto.getData().isEmpty());
-
+        assertTrue(responseDTO.getData().isEmpty());
     }
 
     @Test
@@ -78,16 +78,33 @@ class MusicaServiceTest {
         musicaList.add(musica);
 
         when(musicaRepository.buscarMusicaArtista("bru")).thenReturn(musicaList);
-        when(this.cache.get("bru")).thenReturn(Optional.of(new MusicaDto(musicaList)));
-        MusicaDto musicaDto = musicaService.buscarMusicas("bru");
+        when(this.cache.get("bru")).thenReturn(Optional.of(new ResponseDTO(musicaList)));
+        ResponseDTO responseDTO = musicaService.buscarMusicas("bru");
 
-        assertFalse(musicaDto.getData().isEmpty());
+        assertFalse(responseDTO.getData().isEmpty());
     }
 
     @Test
-    void whenFindMusicWithThreeTwoThenReturnException(){
+    void whenBuscarMusicasWithIvalidFilter(){
 
-        assertThrows(FiltroErrorException.class, () -> musicaService.buscarMusicas("br"));
+        when(musicaRepository.buscarMusicaArtista("b")).thenThrow(new ErrorException("Erro ao filtrar musicas!"));
+        Exception exception = assertThrows(ErrorException.class, () -> musicaService.buscarMusicas("b"));
 
+        assertEquals("Erro ao filtrar musicas!", exception.getMessage());
+    }
+
+    @Test
+    void whenFromRepositoryThenReturnResponseDTO(){
+        Artista artista = new Artista("Leonardo Oliveira");
+        Musica musica = new Musica("Testando 123", artista);
+
+        List<Musica> musicaList = new ArrayList<>();
+        musicaList.add(musica);
+
+        when(musicaRepository.buscarMusicaArtista("bru")).thenReturn(musicaList);
+
+        ResponseDTO response = musicaService.fromRepository("bru");
+
+        assertNotNull(response);
     }
 }

@@ -9,7 +9,7 @@ public class Artista {
 
     @Id
     private final String id = UUID.randomUUID().toString();
-    @Column
+    @Column(name = "nome")
     private String nome;
 
     public Artista(){}

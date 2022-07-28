@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MusicController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">summit-bootcamp</a> &gt; <a href="index.source.html" class="el_package">com.ciandt.summit.bootcamp2022.controller</a> &gt; <span class="el_source">MusicController.java</span></div><h1>MusicController.java</h1><pre class="source lang-java linenums">package com.ciandt.summit.bootcamp2022.controller;
+
+import com.ciandt.summit.bootcamp2022.controller.dto.ResponseDTO;
+import com.ciandt.summit.bootcamp2022.service.MusicaService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping(&quot;/api/v1/music&quot;)
+<span class="fc" id="L15">public class MusicController {</span>
+
+<span class="fc" id="L17">    private static final Logger LOGGER = LoggerFactory.getLogger(MusicController.class);</span>
+    @Autowired
+    private MusicaService service;
+
+    @GetMapping
+    public ResponseEntity&lt;String&gt; get() {
+<span class="fc" id="L23">        return ResponseEntity.ok(&quot;67f5976c-eb1e-404e-8220-2c2a8a23be47&quot;);</span>
+    }
+
+    @GetMapping(&quot;/buscar&quot;)
+    public ResponseEntity&lt;ResponseDTO&gt; buscar(@RequestParam(name = &quot;filtro&quot;, required = false) String filtro){
+
+<span class="fc" id="L29">        LOGGER.info(&quot;Acessando método de buscar musicas por filtro!&quot;);</span>
+<span class="fc" id="L30">        ResponseDTO musicas = service.buscarMusicas(filtro);</span>
+
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if(musicas.getData().isEmpty()){</span>
+<span class="fc" id="L33">            LOGGER.info(&quot;Musicas não encontradas&quot;);</span>
+<span class="fc" id="L34">            return ResponseEntity.noContent().build();</span>
+        }
+
+<span class="fc" id="L37">        LOGGER.info(&quot;Musicas retornadas com sucesso!&quot;);</span>
+<span class="fc" id="L38">        return ResponseEntity.ok(musicas);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

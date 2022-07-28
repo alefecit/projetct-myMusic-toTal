@@ -1,6 +1,6 @@
 package com.ciandt.summit.bootcamp2022.controller;
 
-import com.ciandt.summit.bootcamp2022.controller.dto.MusicaDto;
+import com.ciandt.summit.bootcamp2022.controller.dto.ResponseDTO;
 import com.ciandt.summit.bootcamp2022.service.MusicaService;
 
 import org.slf4j.Logger;
@@ -24,14 +24,14 @@ public class MusicController {
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<MusicaDto> buscar(@RequestParam(name = "filtro", required = false) String filtro){
+    public ResponseEntity<ResponseDTO> buscar(@RequestParam(name = "filtro", required = false) String filtro){
 
         LOGGER.info("Acessando método de buscar musicas por filtro!");
-        MusicaDto musicas = service.buscarMusicas(filtro);
+        ResponseDTO musicas = service.buscarMusicas(filtro);
 
         if(musicas.getData().isEmpty()){
             LOGGER.info("Musicas não encontradas");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(musicas);
+            return ResponseEntity.noContent().build();
         }
 
         LOGGER.info("Musicas retornadas com sucesso!");

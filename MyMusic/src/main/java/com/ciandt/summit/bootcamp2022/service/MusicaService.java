@@ -1,6 +1,6 @@
 package com.ciandt.summit.bootcamp2022.service;
 
-import com.ciandt.summit.bootcamp2022.controller.dto.MusicaDto;
+import com.ciandt.summit.bootcamp2022.controller.dto.ResponseDTO;
 import com.ciandt.summit.bootcamp2022.exceptions.ErrorException;
 import com.ciandt.summit.bootcamp2022.repository.MusicaRepository;
 import com.ciandt.summit.bootcamp2022.utils.cache.GenericCache;
@@ -18,10 +18,10 @@ public class MusicaService {
     private MusicaRepository musicaRepository;
 
     @Autowired
-    private GenericCache<String, MusicaDto> cache;
+    private GenericCache<String, ResponseDTO> cache;
 
 
-    public MusicaDto buscarMusicas(String filtro){
+    public ResponseDTO buscarMusicas(String filtro){
 
         if(filtro.length() < 2){
             LOGGER.error("Erro ao filtrar musicas!");
@@ -32,8 +32,8 @@ public class MusicaService {
         return this.cache.get(filtro).orElseGet(() -> this.fromRepository(filtro));
     }
 
-    public MusicaDto fromRepository(String filtro) {
-        MusicaDto listaDeMusicas = new MusicaDto(musicaRepository.buscarMusicaArtista(filtro));
+    public ResponseDTO fromRepository(String filtro) {
+        ResponseDTO listaDeMusicas = new ResponseDTO(musicaRepository.buscarMusicaArtista(filtro));
         this.cache.put(filtro, listaDeMusicas);
         return listaDeMusicas;
     }
