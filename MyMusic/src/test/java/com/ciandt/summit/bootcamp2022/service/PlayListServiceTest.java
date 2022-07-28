@@ -1,11 +1,11 @@
 package com.ciandt.summit.bootcamp2022.service;
 
 import com.ciandt.summit.bootcamp2022.controller.dto.ResponseDTO;
-import com.ciandt.summit.bootcamp2022.entity.Artista;
-import com.ciandt.summit.bootcamp2022.entity.Musica;
+import com.ciandt.summit.bootcamp2022.entity.Artist;
+import com.ciandt.summit.bootcamp2022.entity.Music;
 import com.ciandt.summit.bootcamp2022.entity.PlayList;
 import com.ciandt.summit.bootcamp2022.exceptions.ErrorException;
-import com.ciandt.summit.bootcamp2022.repository.MusicaRepository;
+import com.ciandt.summit.bootcamp2022.repository.MusicRepository;
 import com.ciandt.summit.bootcamp2022.repository.PlayListRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ class PlayListServiceTest {
     private PlayListRepository playListRepository;
 
     @Mock
-    private MusicaRepository musicaRepository;
+    private MusicRepository musicRepository;
 
     @BeforeEach
     void setUp(){
@@ -39,19 +39,19 @@ class PlayListServiceTest {
     @Test
     void whenAddMusicToPlaylistThenReturn201() {
 
-        Musica musica =  new Musica();
+        Music musica =  new Music();
         PlayList playList = new PlayList();
         musica.setId("hagsagsha");
-        List<Musica> musicaList = new ArrayList<>();
-        musicaList.add(musica);
+        List<Music> musicList = new ArrayList<>();
+        musicList.add(musica);
         playList.setId("jashasa");
         when(playListRepository.save(playList)).thenReturn(playList);
-        when(musicaRepository.findById("hagsagsha")).thenReturn(Optional.of(musica));
+        when(musicRepository.findById("hagsagsha")).thenReturn(Optional.of(musica));
         when(playListRepository.findById("jashasa")).thenReturn(Optional.of(playList));
-        ResponseDTO addMusicaPlaylist = playListService.adicionarMusicaNaPlayList(musica, "jashasa");
+        ResponseDTO addMusicaPlaylist = playListService.addSongInPlayList(musica, "jashasa");
 
         assertFalse(addMusicaPlaylist.getData().isEmpty());
-        for (Musica music: addMusicaPlaylist.getData()) {
+        for (Music music: addMusicaPlaylist.getData()) {
             assertEquals("hagsagsha", music.getId());
         }
 
@@ -62,18 +62,18 @@ class PlayListServiceTest {
     void whenAddMusicToPlaylistThenReturnMusicaNaoEncontradaException(){
 
         PlayList playList = new PlayList();
-        Musica musica =  new Musica();
-        musica.setId("hagsagsha3");
-        List<Musica> musicaList = new ArrayList<>();
-        musicaList.add(musica);
+        Music music =  new Music();
+        music.setId("hagsagsha3");
+        List<Music> musicList = new ArrayList<>();
+        musicList.add(music);
         playList.setId("jashasa");
 
         when(playListRepository.save(playList)).thenReturn(playList);
-        when(musicaRepository.findById("hagsagsha")).thenReturn(Optional.of(musica));
+        when(musicRepository.findById("hagsagsha")).thenReturn(Optional.of(music));
         when(playListRepository.findById("jashasa")).thenReturn(Optional.of(playList));
 
         Exception exception = assertThrows(ErrorException.class, () -> playListService.
-                adicionarMusicaNaPlayList(musica,"jashasa"));
+                addSongInPlayList(music,"jashasa"));
         assertEquals(ErrorException.class,exception.getClass());
     }
 
@@ -81,84 +81,84 @@ class PlayListServiceTest {
     void whenAddMusicToPlaylistThenReturnPlaylistNaoEncontradaException(){
 
         PlayList playList = new PlayList();
-        Musica musica =  new Musica();
-        musica.setId("hagsagsha");
-        List<Musica> musicaList = new ArrayList<>();
-        musicaList.add(musica);
+        Music music =  new Music();
+        music.setId("hagsagsha");
+        List<Music> musicList = new ArrayList<>();
+        musicList.add(music);
         playList.setId("jashas3");
 
         when(playListRepository.save(playList)).thenReturn(playList);
-        when(musicaRepository.findById("hagsagsha")).thenReturn(Optional.of(musica));
+        when(musicRepository.findById("hagsagsha")).thenReturn(Optional.of(music));
         when(playListRepository.findById("jashasa3")).thenReturn(Optional.of(playList));
 
         Exception exception = assertThrows(ErrorException.class, () -> playListService.
-                adicionarMusicaNaPlayList(musica,"jashasa"));
+                addSongInPlayList(music,"jashasa"));
         assertEquals(ErrorException.class,exception.getClass());
     }
 
     @Test
     void whenRemoveMusicFromPlayListThenReturnMessageSuccess(){
 
-        Artista artista = new Artista("Leonardo Oliveira");
-        Musica musica = new Musica("Testando 123", artista);
-        when(musicaRepository.findById("123")).thenReturn(Optional.of(musica));
+        Artist artist = new Artist("Leonardo Oliveira");
+        Music music = new Music("Testando 123", artist);
+        when(musicRepository.findById("123")).thenReturn(Optional.of(music));
 
-        List<Musica> musicaList = new ArrayList<>();
-        musicaList.add(musica);
-        PlayList playList = new PlayList(musicaList);
+        List<Music> musicList = new ArrayList<>();
+        musicList.add(music);
+        PlayList playList = new PlayList(musicList);
         when(playListRepository.findById("123")).thenReturn(Optional.of(playList));
 
-        String response = playListService.removerMusicaNaPlayList("123", "123");
+        String response = playListService.removeSongFromPlayList("123", "123");
 
-        assertEquals("Música 123 removida da Playlist com sucesso!", response);
+        assertEquals("Song 123 removed from playlist successfull.", response);
     }
 
     @Test
     void whenRemoveMusicFromPlayListLookingWithIdMusicNotFoundAtDataBase(){
 
-        Artista artista = new Artista("Leonardo Oliveira");
-        Musica musica = new Musica("Testando 123", artista);
-        when(musicaRepository.findById("123456")).thenReturn(Optional.of(musica));
+        Artist artist = new Artist("Leonardo Oliveira");
+        Music music = new Music("Testando 123", artist);
+        when(musicRepository.findById("123456")).thenReturn(Optional.of(music));
 
-        List<Musica> musicaList = new ArrayList<>();
-        musicaList.add(musica);
-        PlayList playList = new PlayList(musicaList);
+        List<Music> musicList = new ArrayList<>();
+        musicList.add(music);
+        PlayList playList = new PlayList(musicList);
         when(playListRepository.findById("654321")).thenReturn(Optional.of(playList));
 
         assertThrows(ErrorException.class, () -> playListService
-                .removerMusicaNaPlayList("654321", "123"));
+                .removeSongFromPlayList("654321", "123"));
     }
 
     @Test
     void whenRemoveMusicFromPlayListLookingWithIdPlayListNotFoundAtDataBase(){
 
-        Artista artista = new Artista("Leonardo Oliveira");
-        Musica musica = new Musica("Testando 123", artista);
-        when(musicaRepository.findById("123456")).thenReturn(Optional.of(musica));
+        Artist artist = new Artist("Leonardo Oliveira");
+        Music music = new Music("Testando 123", artist);
+        when(musicRepository.findById("123456")).thenReturn(Optional.of(music));
 
-        List<Musica> musicaList = new ArrayList<>();
-        musicaList.add(musica);
-        PlayList playList = new PlayList(musicaList);
+        List<Music> musicList = new ArrayList<>();
+        musicList.add(music);
+        PlayList playList = new PlayList(musicList);
         when(playListRepository.findById("654321")).thenReturn(Optional.of(playList));
 
         assertThrows(ErrorException.class, () -> playListService
-                .removerMusicaNaPlayList("123", "123456"));
+                .removeSongFromPlayList("123", "123456"));
     }
 
     @Test
     void whenRemoveMusicFromPlayListLookingWithIdMusicaNotFoundAtPlayList(){
 
-        Artista artista = new Artista("Leonardo Oliveira");
-        Musica musica = new Musica("Testando 123", artista);
-        when(musicaRepository.findById("123456")).thenReturn(Optional.of(musica));
+        Artist artist = new Artist("Leonardo Oliveira");
+        Music music = new Music("Testando 123", artist);
+        when(musicRepository.findById("123456")).thenReturn(Optional.of(music));
 
-        List<Musica> musicaList = new ArrayList<>();
+        List<Music> musicList = new ArrayList<>();
 
-        PlayList playList = new PlayList(musicaList);
+        PlayList playList = new PlayList(musicList);
         when(playListRepository.findById("654321")).thenReturn(Optional.of(playList));
 
         assertThrows(ErrorException.class, () -> playListService.
-                removerMusicaNaPlayList("654321", "123456"));
+                removeSongFromPlayList("654321", "123456"));
     }
 
 

@@ -1,8 +1,8 @@
 package com.ciandt.summit.bootcamp2022.controller;
 
 import com.ciandt.summit.bootcamp2022.controller.dto.ResponseDTO;
-import com.ciandt.summit.bootcamp2022.entity.Artista;
-import com.ciandt.summit.bootcamp2022.entity.Musica;
+import com.ciandt.summit.bootcamp2022.entity.Artist;
+import com.ciandt.summit.bootcamp2022.entity.Music;
 import com.ciandt.summit.bootcamp2022.exceptions.ErrorException;
 import com.ciandt.summit.bootcamp2022.exceptions.ErrorResponse;
 import com.ciandt.summit.bootcamp2022.service.PlayListService;
@@ -39,39 +39,38 @@ class PlaylistControllerTest {
     @Test
     void whenAddMusicToPlayListThenReturn201() throws Exception {
 
-        Artista artista = new Artista();
-        artista.setNome("Alefe");
+        Artist artist = new Artist();
+        artist.setName("Alefe");
 
-        Musica musica = new Musica("Alefe Patrick", artista);
+        Music music = new Music("Alefe Patrick", artist);
 
-        List<Musica> musicaList = new ArrayList<>();
-        musicaList.add(musica);
-        ResponseDTO responseDTO = new ResponseDTO(musicaList);
-        when(playListService.adicionarMusicaNaPlayList(musica, "123-456-789")).thenReturn(responseDTO);
+        List<Music> musicList = new ArrayList<>();
+        musicList.add(music);
+        ResponseDTO responseDTO = new ResponseDTO(musicList);
+        when(playListService.addSongInPlayList(music, "123-456-789")).thenReturn(responseDTO);
 
         ResponseEntity<ResponseDTO> response = playlistController
-                .adicionarMusicasNaPLaylist(musica, "123-456-789");
+                .addSongInPlayList(music, "123-456-789");
         assertNotNull(response.getBody());
     }
 
     @Test
     void whenMusicToPlayListThenReturnWithBodyNotNull(){
 
-        Artista artista = new Artista();
-        artista.setNome("Alefe");
+        Artist artist = new Artist();
+        artist.setName("Alefe");
 
-        Musica musica = new Musica();
+        Music music = new Music();
 
-        musica.setId("haghasghhagsas");
-        musica.setNome("Alefe Patrick");
-        musica.setArtista(artista);
-        List<Musica> musicaList = new ArrayList<>();
-        musicaList.add(musica);
-        ResponseDTO responseDTO = new ResponseDTO(musicaList);
-        when(playListService.adicionarMusicaNaPlayList(musica, "123-456-789")).thenReturn(responseDTO);
+        music.setId("haghasghhagsas");
+        music.setName("Alefe Patrick");
+        music.setArtist(artist);
+        List<Music> musicList = new ArrayList<>();
+        musicList.add(music);
+        ResponseDTO responseDTO = new ResponseDTO(musicList);
+        when(playListService.addSongInPlayList(music, "123-456-789")).thenReturn(responseDTO);
 
-        ResponseEntity<ResponseDTO> response = playlistController
-                .adicionarMusicasNaPLaylist(musica, "123-456-789");
+        ResponseEntity<ResponseDTO> response = playlistController.addSongInPlayList(music, "123-456-789");
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
@@ -81,8 +80,8 @@ class PlaylistControllerTest {
     @Test
     void whenRemoveMusicFromPlayListThenReturnStatusCodeOK(){
 
-        when(playListService.removerMusicaNaPlayList("123", "123"))
-                .thenReturn("Música 123 removida da Playlist com sucesso!");
+        when(playListService.removeSongFromPlayList("123", "123"))
+                .thenReturn("Song 123 removed from playlist successfull.");
         ResponseEntity<String> response = playlistController.removerMusicaDaPLaylist("123", "123");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -91,53 +90,53 @@ class PlaylistControllerTest {
     @Test
     void whenRemoveMusicFromPlayListThenReturnStringMessageSuccess(){
 
-        when(playListService.removerMusicaNaPlayList("123", "123"))
-                .thenReturn("Música 123 removida da Playlist com sucesso!");
+        when(playListService.removeSongFromPlayList("123", "123"))
+                .thenReturn("Song 123 removed from playlist successfull.");
         ResponseEntity<String> response = playlistController.removerMusicaDaPLaylist("123", "123");
 
-        assertEquals("Música 123 removida da Playlist com sucesso!", response.getBody());
+        assertEquals("Song 123 removed from playlist successfull.", response.getBody());
     }
 
     @Test
     void whenRemoveMusicFromPlayListWithIdMusicNotFoundAtDataBase(){
-        when(playListService.removerMusicaNaPlayList("123456", "123"))
-                .thenThrow(new ErrorException("Música não encontrada!"));
+        when(playListService.removeSongFromPlayList("123456", "123"))
+                .thenThrow(new ErrorException("Song not found."));
 
       Exception exception = assertThrows(ErrorException.class, () -> {
           playlistController.removerMusicaDaPLaylist("123456", "123");
-      }, "Música não encontrada!");
+      }, "Song not found.");
 
         ErrorResponse error = new ErrorResponse(400, exception.getMessage());
 
-        assertEquals("Música não encontrada!", error.getMessage());
+        assertEquals("Song not found.", error.getMessage());
     }
 
     @Test
     void whenRemoveMusicFromPlayListWithIdPlayListNotFoundAtDataBase(){
-        when(playListService.removerMusicaNaPlayList("123", "123456"))
-                .thenThrow(new ErrorException("PlayList não encontrada!"));
+        when(playListService.removeSongFromPlayList("123", "123456"))
+                .thenThrow(new ErrorException("PlayList not found"));
 
         Exception exception = assertThrows(ErrorException.class, () -> {
             playlistController.removerMusicaDaPLaylist("123", "123456");
-        }, "PlayList não encontrada!");
+        }, "PlayList not found");
 
         ErrorResponse error = new ErrorResponse(400, exception.getMessage());
 
-        assertEquals("PlayList não encontrada!", error.getMessage());
+        assertEquals("PlayList not found", error.getMessage());
     }
 
     @Test
     void whenRemoveMusicFromPlayListWithIdMusicaFoundAtPlayList(){
-        when(playListService.removerMusicaNaPlayList("123456", "159"))
-                .thenThrow(new ErrorException("Música não encontrada na playList"));
+        when(playListService.removeSongFromPlayList("123456", "159"))
+                .thenThrow(new ErrorException("PlayList Song not found in playlist."));
 
         Exception exception = assertThrows(ErrorException.class, () -> {
             playlistController.removerMusicaDaPLaylist("123456", "159");
-        }, "Música não encontrada na playList");
+        }, "PlayList Song not found in playlist.");
 
         ErrorResponse error = new ErrorResponse(400, exception.getMessage());
 
-        assertEquals("Música não encontrada na playList", error.getMessage());
+        assertEquals("PlayList Song not found in playlist.", error.getMessage());
     }
 
 }

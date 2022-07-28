@@ -1,22 +1,22 @@
 package com.ciandt.summit.bootcamp2022.controller.dto;
 
-import com.ciandt.summit.bootcamp2022.entity.Musica;
+import com.ciandt.summit.bootcamp2022.entity.Music;
 
 import java.util.List;
 
 public class ResponseDTO {
 
-    public ResponseDTO(List<Musica> listMusic) {
+    public ResponseDTO(List<Music> listMusic) {
         this.data = listMusic;
     }
 
-    private List<Musica> data;
+    private List<Music> data;
 
-    public List<Musica> getData() {
+    public List<Music> getData() {
         return data;
     }
 
-    public void setData(List<Musica> data) {
+    public void setData(List<Music> data) {
         this.data = data;
     }
 }

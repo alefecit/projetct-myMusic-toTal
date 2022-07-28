@@ -12,10 +12,10 @@ public class PlayList {
     private String id = UUID.randomUUID().toString();
     @OneToMany
     @JoinTable(name = "PlaylistMusicas", joinColumns = @JoinColumn(name = "PlaylistId"), inverseJoinColumns = @JoinColumn(name = "MusicaId"))
-    private List<Musica> musicas;
+    private List<Music> music;
 
-    public PlayList(List<Musica> musicas) {
-        this.musicas = musicas;
+    public PlayList(List<Music> music) {
+        this.music = music;
     }
 
     public PlayList() {
@@ -29,11 +29,11 @@ public class PlayList {
         return id;
     }
 
-    public List<Musica> getMusicas() {
-        return musicas;
+    public List<Music> getMusicas() {
+        return music;
     }
 
-    public void setMusicas(List<Musica> musicas) {
-        this.musicas = musicas;
+    public void setMusicas(List<Music> music) {
+        this.music = music;
     }
 }
