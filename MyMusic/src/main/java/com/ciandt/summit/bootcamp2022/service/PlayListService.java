@@ -1,17 +1,15 @@
 package com.ciandt.summit.bootcamp2022.service;
 
-import com.ciandt.summit.bootcamp2022.controller.dto.MusicaDto;
+import com.ciandt.summit.bootcamp2022.controller.dto.ResponseDTO;
 import com.ciandt.summit.bootcamp2022.entity.Musica;
 import com.ciandt.summit.bootcamp2022.entity.PlayList;
 import com.ciandt.summit.bootcamp2022.exceptions.*;
 import com.ciandt.summit.bootcamp2022.repository.MusicaRepository;
 import com.ciandt.summit.bootcamp2022.repository.PlayListRepository;
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,18 +25,18 @@ public class PlayListService {
     @Autowired
     private MusicaService musicaService;
 
-    public MusicaDto adicionarMusicaNaPlayList(Musica musicaAdd, String idPlayList){
+    public ResponseDTO adicionarMusicaNaPlayList(Musica musicaAdd, String idPlayList){
 
         Musica musica = musicaRepository.findById(musicaAdd.getId()).orElseThrow(() -> new ErrorException("Música não encontrada!"));
         PlayList playList = playListRepository.findById(idPlayList).orElseThrow(() -> new ErrorException("PlayList não encontrada!"));
 
         List<Musica> listaMusicas = new ArrayList<>();
         listaMusicas.add(musica);
-        MusicaDto musicaDto = new MusicaDto(listaMusicas);
+        ResponseDTO responseDTO = new ResponseDTO(listaMusicas);
 
         playList.setMusicas(listaMusicas);
         playListRepository.save(playList);
-        return musicaDto;
+        return responseDTO;
     }
 
     public String removerMusicaNaPlayList(String idPlayList, String musicaRemove){

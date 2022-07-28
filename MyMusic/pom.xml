@@ -100,6 +100,17 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>com/ciandt/summit/bootcamp2022/entity/**</exclude>
+						<exclude>com/ciandt/summit/bootcamp2022/config/**</exclude>
+						<exclude>com/ciandt/summit/bootcamp2022/utils/**</exclude>
+						<exclude>com/ciandt/summit/bootcamp2022/controller/dto/**</exclude>
+						<exclude>com/ciandt/summit/bootcamp2022/service/RequestTokenProviderService.class</exclude>
+						<exclude>com/ciandt/summit/bootcamp2022/exceptions/ExceptionService.class</exclude>
+						<exclude>com/ciandt/summit/bootcamp2022/SummitBootcampApplication.class</exclude>
+					</excludes>
+				</configuration>
 				<version>0.8.2</version>
 				<executions>
 					<execution>

@@ -1,8 +1,10 @@
 package com.ciandt.summit.bootcamp2022.controller;
 
-import com.ciandt.summit.bootcamp2022.controller.dto.MusicaDto;
+import com.ciandt.summit.bootcamp2022.controller.dto.ResponseDTO;
 import com.ciandt.summit.bootcamp2022.entity.Artista;
 import com.ciandt.summit.bootcamp2022.entity.Musica;
+import com.ciandt.summit.bootcamp2022.exceptions.ErrorException;
+import com.ciandt.summit.bootcamp2022.exceptions.ErrorResponse;
 import com.ciandt.summit.bootcamp2022.service.PlayListService;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,10 +46,11 @@ class PlaylistControllerTest {
 
         List<Musica> musicaList = new ArrayList<>();
         musicaList.add(musica);
-        MusicaDto musicaDto = new MusicaDto(musicaList);
-        when(playListService.adicionarMusicaNaPlayList(musica, "123-456-789")).thenReturn(musicaDto);
+        ResponseDTO responseDTO = new ResponseDTO(musicaList);
+        when(playListService.adicionarMusicaNaPlayList(musica, "123-456-789")).thenReturn(responseDTO);
 
-        ResponseEntity<MusicaDto> response = playlistController.adicionarMusicasNaPLaylist(musica, "123-456-789");
+        ResponseEntity<ResponseDTO> response = playlistController
+                .adicionarMusicasNaPLaylist(musica, "123-456-789");
         assertNotNull(response.getBody());
     }
 
@@ -64,10 +67,11 @@ class PlaylistControllerTest {
         musica.setArtista(artista);
         List<Musica> musicaList = new ArrayList<>();
         musicaList.add(musica);
-        MusicaDto musicaDto = new MusicaDto(musicaList);
-        when(playListService.adicionarMusicaNaPlayList(musica, "123-456-789")).thenReturn(musicaDto);
+        ResponseDTO responseDTO = new ResponseDTO(musicaList);
+        when(playListService.adicionarMusicaNaPlayList(musica, "123-456-789")).thenReturn(responseDTO);
 
-        ResponseEntity<MusicaDto> response = playlistController.adicionarMusicasNaPLaylist(musica, "123-456-789");
+        ResponseEntity<ResponseDTO> response = playlistController
+                .adicionarMusicasNaPLaylist(musica, "123-456-789");
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
@@ -77,7 +81,8 @@ class PlaylistControllerTest {
     @Test
     void whenRemoveMusicFromPlayListThenReturnStatusCodeOK(){
 
-        when(playListService.removerMusicaNaPlayList("123", "123")).thenReturn("Música 123 removida da Playlist com sucesso!");
+        when(playListService.removerMusicaNaPlayList("123", "123"))
+                .thenReturn("Música 123 removida da Playlist com sucesso!");
         ResponseEntity<String> response = playlistController.removerMusicaDaPLaylist("123", "123");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -86,7 +91,8 @@ class PlaylistControllerTest {
     @Test
     void whenRemoveMusicFromPlayListThenReturnStringMessageSuccess(){
 
-        when(playListService.removerMusicaNaPlayList("123", "123")).thenReturn("Música 123 removida da Playlist com sucesso!");
+        when(playListService.removerMusicaNaPlayList("123", "123"))
+                .thenReturn("Música 123 removida da Playlist com sucesso!");
         ResponseEntity<String> response = playlistController.removerMusicaDaPLaylist("123", "123");
 
         assertEquals("Música 123 removida da Playlist com sucesso!", response.getBody());
@@ -94,14 +100,44 @@ class PlaylistControllerTest {
 
     @Test
     void whenRemoveMusicFromPlayListWithIdMusicNotFoundAtDataBase(){
-        when(playListService.removerMusicaNaPlayList("123456", "123")).thenThrow(MusicaNaoEncontradaException.class);
-        assertThrows(MusicaNaoEncontradaException.class, () -> playlistController.removerMusicaDaPLaylist("123456", "123"));
+        when(playListService.removerMusicaNaPlayList("123456", "123"))
+                .thenThrow(new ErrorException("Música não encontrada!"));
+
+      Exception exception = assertThrows(ErrorException.class, () -> {
+          playlistController.removerMusicaDaPLaylist("123456", "123");
+      }, "Música não encontrada!");
+
+        ErrorResponse error = new ErrorResponse(400, exception.getMessage());
+
+        assertEquals("Música não encontrada!", error.getMessage());
     }
 
     @Test
     void whenRemoveMusicFromPlayListWithIdPlayListNotFoundAtDataBase(){
-        when(playListService.removerMusicaNaPlayList("123", "123456")).thenThrow(PlayListNaoEncontradaException.class);
-        assertThrows(PlayListNaoEncontradaException.class, () -> playlistController.removerMusicaDaPLaylist("123", "123456"));
+        when(playListService.removerMusicaNaPlayList("123", "123456"))
+                .thenThrow(new ErrorException("PlayList não encontrada!"));
+
+        Exception exception = assertThrows(ErrorException.class, () -> {
+            playlistController.removerMusicaDaPLaylist("123", "123456");
+        }, "PlayList não encontrada!");
+
+        ErrorResponse error = new ErrorResponse(400, exception.getMessage());
+
+        assertEquals("PlayList não encontrada!", error.getMessage());
+    }
+
+    @Test
+    void whenRemoveMusicFromPlayListWithIdMusicaFoundAtPlayList(){
+        when(playListService.removerMusicaNaPlayList("123456", "159"))
+                .thenThrow(new ErrorException("Música não encontrada na playList"));
+
+        Exception exception = assertThrows(ErrorException.class, () -> {
+            playlistController.removerMusicaDaPLaylist("123456", "159");
+        }, "Música não encontrada na playList");
+
+        ErrorResponse error = new ErrorResponse(400, exception.getMessage());
+
+        assertEquals("Música não encontrada na playList", error.getMessage());
     }
 
 }

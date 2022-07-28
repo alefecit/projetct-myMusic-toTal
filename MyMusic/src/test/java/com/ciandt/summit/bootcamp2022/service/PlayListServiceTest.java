@@ -1,9 +1,10 @@
 package com.ciandt.summit.bootcamp2022.service;
 
-import com.ciandt.summit.bootcamp2022.controller.dto.MusicaDto;
+import com.ciandt.summit.bootcamp2022.controller.dto.ResponseDTO;
 import com.ciandt.summit.bootcamp2022.entity.Artista;
 import com.ciandt.summit.bootcamp2022.entity.Musica;
 import com.ciandt.summit.bootcamp2022.entity.PlayList;
+import com.ciandt.summit.bootcamp2022.exceptions.ErrorException;
 import com.ciandt.summit.bootcamp2022.repository.MusicaRepository;
 import com.ciandt.summit.bootcamp2022.repository.PlayListRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +48,7 @@ class PlayListServiceTest {
         when(playListRepository.save(playList)).thenReturn(playList);
         when(musicaRepository.findById("hagsagsha")).thenReturn(Optional.of(musica));
         when(playListRepository.findById("jashasa")).thenReturn(Optional.of(playList));
-        MusicaDto addMusicaPlaylist = playListService.adicionarMusicaNaPlayList(musica, "jashasa");
+        ResponseDTO addMusicaPlaylist = playListService.adicionarMusicaNaPlayList(musica, "jashasa");
 
         assertFalse(addMusicaPlaylist.getData().isEmpty());
         for (Musica music: addMusicaPlaylist.getData()) {
@@ -71,8 +72,9 @@ class PlayListServiceTest {
         when(musicaRepository.findById("hagsagsha")).thenReturn(Optional.of(musica));
         when(playListRepository.findById("jashasa")).thenReturn(Optional.of(playList));
 
-        Exception exception = assertThrows(MusicaNaoEncontradaException.class, () -> playListService.adicionarMusicaNaPlayList(musica,"jashasa"));
-        assertEquals(MusicaNaoEncontradaException.class,exception.getClass());
+        Exception exception = assertThrows(ErrorException.class, () -> playListService.
+                adicionarMusicaNaPlayList(musica,"jashasa"));
+        assertEquals(ErrorException.class,exception.getClass());
     }
 
     @Test
@@ -89,8 +91,9 @@ class PlayListServiceTest {
         when(musicaRepository.findById("hagsagsha")).thenReturn(Optional.of(musica));
         when(playListRepository.findById("jashasa3")).thenReturn(Optional.of(playList));
 
-        Exception exception = assertThrows(PlayListNaoEncontradaException.class, () -> playListService.adicionarMusicaNaPlayList(musica,"jashasa"));
-        assertEquals(PlayListNaoEncontradaException.class,exception.getClass());
+        Exception exception = assertThrows(ErrorException.class, () -> playListService.
+                adicionarMusicaNaPlayList(musica,"jashasa"));
+        assertEquals(ErrorException.class,exception.getClass());
     }
 
     @Test
@@ -122,7 +125,8 @@ class PlayListServiceTest {
         PlayList playList = new PlayList(musicaList);
         when(playListRepository.findById("654321")).thenReturn(Optional.of(playList));
 
-        assertThrows(MusicaNaoEncontradaException.class, () -> playListService.removerMusicaNaPlayList("654321", "123"));
+        assertThrows(ErrorException.class, () -> playListService
+                .removerMusicaNaPlayList("654321", "123"));
     }
 
     @Test
@@ -137,7 +141,8 @@ class PlayListServiceTest {
         PlayList playList = new PlayList(musicaList);
         when(playListRepository.findById("654321")).thenReturn(Optional.of(playList));
 
-        assertThrows(PlayListNaoEncontradaException.class, () -> playListService.removerMusicaNaPlayList("123", "123456"));
+        assertThrows(ErrorException.class, () -> playListService
+                .removerMusicaNaPlayList("123", "123456"));
     }
 
     @Test
@@ -152,6 +157,9 @@ class PlayListServiceTest {
         PlayList playList = new PlayList(musicaList);
         when(playListRepository.findById("654321")).thenReturn(Optional.of(playList));
 
-        assertThrows(MusicNotFoundException.class, () -> playListService.removerMusicaNaPlayList("654321", "123456"));
+        assertThrows(ErrorException.class, () -> playListService.
+                removerMusicaNaPlayList("654321", "123456"));
     }
+
+
 }

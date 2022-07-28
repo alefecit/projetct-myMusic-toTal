@@ -1,8 +1,10 @@
 package com.ciandt.summit.bootcamp2022.controller;
 
-import com.ciandt.summit.bootcamp2022.controller.dto.MusicaDto;
+import com.ciandt.summit.bootcamp2022.controller.dto.ResponseDTO;
 import com.ciandt.summit.bootcamp2022.entity.Artista;
 import com.ciandt.summit.bootcamp2022.entity.Musica;
+import com.ciandt.summit.bootcamp2022.exceptions.ErrorException;
+import com.ciandt.summit.bootcamp2022.exceptions.ErrorResponse;
 import com.ciandt.summit.bootcamp2022.service.MusicaService;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,6 +17,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +44,6 @@ public class MusicControllerTest {
     void whenGetThenReturnString() throws Exception {
 
         ResponseEntity<String> response = musicController.get();
-
         assertEquals("67f5976c-eb1e-404e-8220-2c2a8a23be47",response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
@@ -55,13 +58,27 @@ public class MusicControllerTest {
         List<Musica> listaDeMusicas = new ArrayList<>();
         listaDeMusicas.add(musica);
 
-        MusicaDto musicaDtoReturn = new MusicaDto(listaDeMusicas);
+        ResponseDTO responseDTOReturn = new ResponseDTO(listaDeMusicas);
 
-        when(musicaService.buscarMusicas("bru")).thenReturn(musicaDtoReturn);
+        when(musicaService.buscarMusicas("bru")).thenReturn(responseDTOReturn);
 
-        ResponseEntity<MusicaDto> response = musicController.buscar("bru");
+        ResponseEntity<ResponseDTO> response = musicController.buscar("bru");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void whenBuscarMusicasWithIvalidFilter(){
+
+        when(musicaService.buscarMusicas("b")).thenThrow(new ErrorException("Erro ao filtrar musicas!"));
+
+       Exception exception = assertThrows(ErrorException.class, () -> {
+            musicController.buscar("b");
+        }, "Erro ao filtrar musicas!");
+
+       ErrorResponse errorResponse = new ErrorResponse(400, exception.getMessage());
+
+      assertEquals(HttpStatus.BAD_REQUEST.value(), errorResponse.getStatus());
     }
 
     @Test
@@ -74,52 +91,28 @@ public class MusicControllerTest {
         List<Musica> listaDeMusicas = new ArrayList<>();
         listaDeMusicas.add(musica);
 
-        MusicaDto musicaDtoReturn = new MusicaDto(listaDeMusicas);
+        ResponseDTO responseDTOReturn = new ResponseDTO(listaDeMusicas);
 
-        when(musicaService.buscarMusicas("bru")).thenReturn(musicaDtoReturn);
+        when(musicaService.buscarMusicas("bru")).thenReturn(responseDTOReturn);
 
-        ResponseEntity<MusicaDto> response = musicController.buscar("bru");
+        ResponseEntity<ResponseDTO> response = musicController.buscar("bru");
 
         assertNotNull(response.getBody());
 
     }
 
     @Test
-    void whenBuscarMusicasThenReturnTrueForNotEmpty(){
+    void whenBuscarMusicasThenReturnErrorException(){
 
-        Artista artista = new Artista("Bruno Mars");
+        List<Musica> musicaList = new ArrayList<>();
 
-        List<Musica> listaDeMusicas = new ArrayList<>();
+        ResponseDTO responseDTO = new ResponseDTO(musicaList);
 
-        MusicaDto musicaDtoReturn = new MusicaDto(listaDeMusicas);
+        when(musicaService.buscarMusicas("saiu")).thenReturn(responseDTO);
 
-        when(musicaService.buscarMusicas("bru")).thenReturn(musicaDtoReturn);
+        ResponseEntity<ResponseDTO> response = musicController.buscar("saiu");
 
-        ResponseEntity<MusicaDto> response = musicController.buscar("bru");
-
-        assertTrue(response.getBody().getData().isEmpty());
-
+        assertNull(response.getBody());
     }
-
-    @Test
-    void whenBuscarMusicasThenReturnFalseForNotEmpty(){
-
-        Artista artista = new Artista("Bruno Mars");
-
-        Musica musica = new Musica("Talking to the moon", artista);
-
-        List<Musica> listaDeMusicas = new ArrayList<>();
-        listaDeMusicas.add(musica);
-
-        MusicaDto musicaDtoReturn = new MusicaDto(listaDeMusicas);
-
-        when(musicaService.buscarMusicas("bru")).thenReturn(musicaDtoReturn);
-
-        ResponseEntity<MusicaDto> response = musicController.buscar("bru");
-
-        assertFalse(response.getBody().getData().isEmpty());
-
-    }
-
 
 }
