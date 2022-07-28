@@ -3,7 +3,6 @@ package com.ciandt.summit.bootcamp2022.service;
 import com.ciandt.summit.bootcamp2022.controller.dto.MusicaDto;
 import com.ciandt.summit.bootcamp2022.entity.Artista;
 import com.ciandt.summit.bootcamp2022.entity.Musica;
-import com.ciandt.summit.bootcamp2022.exceptions.FiltroErrorException;
 import com.ciandt.summit.bootcamp2022.repository.MusicaRepository;
 import com.ciandt.summit.bootcamp2022.utils.cache.GenericCache;
 import org.junit.jupiter.api.BeforeEach;
