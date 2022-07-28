@@ -1,6 +1,6 @@
 package com.ciandt.summit.bootcamp2022.config.interceptor;
 
-import com.ciandt.summit.bootcamp2022.exceptions.UnauthorizedException;
+import com.ciandt.summit.bootcamp2022.exceptions.ErrorException;
 import com.ciandt.summit.bootcamp2022.service.MusicaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class JwtInterceptor implements HandlerInterceptor {
             return true;
         } else {
             LOGGER.info("Usuário não autorizado!");
-            throw new UnauthorizedException();
+            throw new ErrorException("Usuário não autorizado!");
         }
     }
 

@@ -3,9 +3,7 @@ package com.ciandt.summit.bootcamp2022.service;
 import com.ciandt.summit.bootcamp2022.controller.dto.MusicaDto;
 import com.ciandt.summit.bootcamp2022.entity.Musica;
 import com.ciandt.summit.bootcamp2022.entity.PlayList;
-import com.ciandt.summit.bootcamp2022.exceptions.MusicNotFoundException;
-import com.ciandt.summit.bootcamp2022.exceptions.MusicaNaoEncontradaException;
-import com.ciandt.summit.bootcamp2022.exceptions.PlayListNaoEncontradaException;
+import com.ciandt.summit.bootcamp2022.exceptions.*;
 import com.ciandt.summit.bootcamp2022.repository.MusicaRepository;
 import com.ciandt.summit.bootcamp2022.repository.PlayListRepository;
 import net.bytebuddy.implementation.bytecode.Throw;
@@ -31,8 +29,8 @@ public class PlayListService {
 
     public MusicaDto adicionarMusicaNaPlayList(Musica musicaAdd, String idPlayList){
 
-        Musica musica = musicaRepository.findById(musicaAdd.getId()).orElseThrow(() -> new MusicaNaoEncontradaException());
-        PlayList playList = playListRepository.findById(idPlayList).orElseThrow(() -> new PlayListNaoEncontradaException());
+        Musica musica = musicaRepository.findById(musicaAdd.getId()).orElseThrow(() -> new ErrorException("Música não encontrada!"));
+        PlayList playList = playListRepository.findById(idPlayList).orElseThrow(() -> new ErrorException("PlayList não encontrada!"));
 
         List<Musica> listaMusicas = new ArrayList<>();
         listaMusicas.add(musica);
@@ -45,12 +43,12 @@ public class PlayListService {
 
     public String removerMusicaNaPlayList(String idPlayList, String musicaRemove){
 
-        Musica musica = musicaRepository.findById(musicaRemove).orElseThrow(() -> new MusicaNaoEncontradaException());
-        PlayList playList = playListRepository.findById(idPlayList).orElseThrow(() -> new PlayListNaoEncontradaException());
+        Musica musica = musicaRepository.findById(musicaRemove).orElseThrow(() -> new ErrorException("Música não encontrada!"));
+        PlayList playList = playListRepository.findById(idPlayList).orElseThrow(() -> new ErrorException("PlayList não encontrada!"));
         List<Musica> musicas = playList.getMusicas().stream().filter(music -> music.equals(musica)).collect(Collectors.toList());
 
         if(musicas.size() < 1){
-            throw new MusicNotFoundException();
+            throw new ErrorException("Música não encontrada na playList");
         }
 
         try {

@@ -1,16 +1,13 @@
 package com.ciandt.summit.bootcamp2022.service;
 
 import com.ciandt.summit.bootcamp2022.controller.dto.MusicaDto;
-import com.ciandt.summit.bootcamp2022.entity.Musica;
-import com.ciandt.summit.bootcamp2022.exceptions.FiltroErrorException;
+import com.ciandt.summit.bootcamp2022.exceptions.ErrorException;
 import com.ciandt.summit.bootcamp2022.repository.MusicaRepository;
 import com.ciandt.summit.bootcamp2022.utils.cache.GenericCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class MusicaService {
@@ -26,9 +23,9 @@ public class MusicaService {
 
     public MusicaDto buscarMusicas(String filtro){
 
-        if(filtro.length() < 3){
+        if(filtro.length() < 2){
             LOGGER.error("Erro ao filtrar musicas!");
-            throw new FiltroErrorException();
+            throw new ErrorException("Erro ao filtrar musicas!");
         }
 
         LOGGER.info("Musicas filtradas com sucesso!");

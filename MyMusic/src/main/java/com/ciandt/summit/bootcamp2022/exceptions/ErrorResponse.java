@@ -1,11 +1,10 @@
 package com.ciandt.summit.bootcamp2022.exceptions;
 
-public class UnauthorizedErrorResponse {
-
+public class ErrorResponse {
     int status;
     String message;
 
-    public UnauthorizedErrorResponse(int status, String message) {
+    public ErrorResponse(int status, String message) {
         this.status = status;
         this.message = message;
     }
