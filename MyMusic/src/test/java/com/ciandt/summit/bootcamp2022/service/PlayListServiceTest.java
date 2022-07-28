@@ -1,9 +1,11 @@
 package com.ciandt.summit.bootcamp2022.service;
 
 import com.ciandt.summit.bootcamp2022.controller.dto.MusicaDto;
+import com.ciandt.summit.bootcamp2022.entity.Artista;
 import com.ciandt.summit.bootcamp2022.entity.Musica;
 import com.ciandt.summit.bootcamp2022.entity.PlayList;
 import com.ciandt.summit.bootcamp2022.exceptions.FiltroErrorException;
+import com.ciandt.summit.bootcamp2022.exceptions.MusicNotFoundException;
 import com.ciandt.summit.bootcamp2022.exceptions.MusicaNaoEncontradaException;
 import com.ciandt.summit.bootcamp2022.exceptions.PlayListNaoEncontradaException;
 import com.ciandt.summit.bootcamp2022.repository.MusicaRepository;
@@ -93,5 +95,67 @@ class PlayListServiceTest {
 
         Exception exception = assertThrows(PlayListNaoEncontradaException.class, () -> playListService.adicionarMusicaNaPlayList(musica,"jashasa"));
         assertEquals(PlayListNaoEncontradaException.class,exception.getClass());
+    }
+
+    @Test
+    void whenRemoveMusicFromPlayListThenReturnMessageSuccess(){
+
+        Artista artista = new Artista("Leonardo Oliveira");
+        Musica musica = new Musica("Testando 123", artista);
+        when(musicaRepository.findById("123")).thenReturn(Optional.of(musica));
+
+        List<Musica> musicaList = new ArrayList<>();
+        musicaList.add(musica);
+        PlayList playList = new PlayList(musicaList);
+        when(playListRepository.findById("123")).thenReturn(Optional.of(playList));
+
+        String response = playListService.removerMusicaNaPlayList("123", "123");
+
+        assertEquals("Música 123 removida da Playlist com sucesso!", response);
+    }
+
+    @Test
+    void whenRemoveMusicFromPlayListLookingWithIdMusicNotFoundAtDataBase(){
+
+        Artista artista = new Artista("Leonardo Oliveira");
+        Musica musica = new Musica("Testando 123", artista);
+        when(musicaRepository.findById("123456")).thenReturn(Optional.of(musica));
+
+        List<Musica> musicaList = new ArrayList<>();
+        musicaList.add(musica);
+        PlayList playList = new PlayList(musicaList);
+        when(playListRepository.findById("654321")).thenReturn(Optional.of(playList));
+
+        assertThrows(MusicaNaoEncontradaException.class, () -> playListService.removerMusicaNaPlayList("654321", "123"));
+    }
+
+    @Test
+    void whenRemoveMusicFromPlayListLookingWithIdPlayListNotFoundAtDataBase(){
+
+        Artista artista = new Artista("Leonardo Oliveira");
+        Musica musica = new Musica("Testando 123", artista);
+        when(musicaRepository.findById("123456")).thenReturn(Optional.of(musica));
+
+        List<Musica> musicaList = new ArrayList<>();
+        musicaList.add(musica);
+        PlayList playList = new PlayList(musicaList);
+        when(playListRepository.findById("654321")).thenReturn(Optional.of(playList));
+
+        assertThrows(PlayListNaoEncontradaException.class, () -> playListService.removerMusicaNaPlayList("123", "123456"));
+    }
+
+    @Test
+    void whenRemoveMusicFromPlayListLookingWithIdMusicaNotFoundAtPlayList(){
+
+        Artista artista = new Artista("Leonardo Oliveira");
+        Musica musica = new Musica("Testando 123", artista);
+        when(musicaRepository.findById("123456")).thenReturn(Optional.of(musica));
+
+        List<Musica> musicaList = new ArrayList<>();
+
+        PlayList playList = new PlayList(musicaList);
+        when(playListRepository.findById("654321")).thenReturn(Optional.of(playList));
+
+        assertThrows(MusicNotFoundException.class, () -> playListService.removerMusicaNaPlayList("654321", "123456"));
     }
 }

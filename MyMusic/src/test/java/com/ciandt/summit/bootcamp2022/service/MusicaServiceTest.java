@@ -5,6 +5,7 @@ import com.ciandt.summit.bootcamp2022.entity.Artista;
 import com.ciandt.summit.bootcamp2022.entity.Musica;
 import com.ciandt.summit.bootcamp2022.exceptions.FiltroErrorException;
 import com.ciandt.summit.bootcamp2022.repository.MusicaRepository;
+import com.ciandt.summit.bootcamp2022.utils.cache.GenericCache;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,6 +17,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 class MusicaServiceTest {
 
@@ -24,6 +26,9 @@ class MusicaServiceTest {
 
     @Mock
     private MusicaRepository musicaRepository;
+
+    @Mock
+    private GenericCache<String, MusicaDto> cache;
 
     @BeforeEach
     void setUp(){
@@ -37,10 +42,11 @@ class MusicaServiceTest {
 
         when(musicaRepository.buscarMusicaArtista("bru")).thenReturn(musicaList);
 
+        when(this.cache.get("bru")).thenReturn(Optional.of(new MusicaDto(musicaList)));
+
         MusicaDto musicaDto = musicaService.buscarMusicas("bru");
 
         assertNotNull(musicaDto);
-        assertTrue(musicaDto.getData().isEmpty());
     }
 
     @Test
@@ -48,6 +54,7 @@ class MusicaServiceTest {
 
         List<Musica> musicaList = new ArrayList<>();
 
+        when(this.cache.get("bru")).thenReturn(Optional.of(new MusicaDto(musicaList)));
 
         when(musicaRepository.buscarMusicaArtista("bru")).thenReturn(musicaList);
 
@@ -72,7 +79,7 @@ class MusicaServiceTest {
         musicaList.add(musica);
 
         when(musicaRepository.buscarMusicaArtista("bru")).thenReturn(musicaList);
-
+        when(this.cache.get("bru")).thenReturn(Optional.of(new MusicaDto(musicaList)));
         MusicaDto musicaDto = musicaService.buscarMusicas("bru");
 
         assertFalse(musicaDto.getData().isEmpty());

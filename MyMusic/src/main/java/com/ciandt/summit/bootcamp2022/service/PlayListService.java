@@ -43,13 +43,16 @@ public class PlayListService {
         return musicaDto;
     }
 
-    public String removerMusicaNaPlayList(String idPlayList, String musicaRemove ){
+    public String removerMusicaNaPlayList(String idPlayList, String musicaRemove){
+
         Musica musica = musicaRepository.findById(musicaRemove).orElseThrow(() -> new MusicaNaoEncontradaException());
         PlayList playList = playListRepository.findById(idPlayList).orElseThrow(() -> new PlayListNaoEncontradaException());
         List<Musica> musicas = playList.getMusicas().stream().filter(music -> music.equals(musica)).collect(Collectors.toList());
+
         if(musicas.size() < 1){
             throw new MusicNotFoundException();
         }
+
         try {
             playList.getMusicas().remove(musica);
             playListRepository.save(playList);
